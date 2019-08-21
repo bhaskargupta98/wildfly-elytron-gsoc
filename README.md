@@ -21,8 +21,7 @@ So in simple terms I can run JavaScript/Python or any other scripting language i
 Check out this blog post to see how this can actually be achieved : [Running your JavaScript scripts in Java](https://medium.com/@guptab3/running-your-javascript-python-scripts-in-java-6b44acbafab4).
 
 ### Phase 3 [Evaluation 3]
-After super taxing phase, I actually entered the final phase, wherein I worked on the implementation on the work done so far.
-Which included, creating a separate [ScriptRoleDecoder class](https://github.com/bhaskargupta98/wildfly-elytron-gsoc/blob/master/src/main/java/org/wildfly/security/script/engine/ScriptRoleDecoder.java) with corresponding Project Object Model [pom.xml](https://github.com/bhaskargupta98/wildfly-elytron-gsoc/blob/master/src/main/java/org/wildfly/security/script/engine/pom.xml) file for adding appropriate dependencies.
+After super taxing phase, I actually entered the final phase, wherein I worked on the implementation on the work done so far which included, creating a separate [ScriptRoleDecoder class](https://github.com/bhaskargupta98/wildfly-elytron-gsoc/blob/master/src/main/java/org/wildfly/security/script/engine/ScriptRoleDecoder.java) with corresponding Project Object Model [pom.xml](https://github.com/bhaskargupta98/wildfly-elytron-gsoc/blob/master/src/main/java/org/wildfly/security/script/engine/pom.xml) file for adding appropriate dependencies.
 Then I entered the testing phase which included creating a [test file](https://github.com/bhaskargupta98/wildfly-elytron-gsoc/blob/master/src/test/java/org/wildfly/security/script/engine/ScriptRoleDecoderTest.java) for this very class.
 
 ## Post GSoC
