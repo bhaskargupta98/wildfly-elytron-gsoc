@@ -1,7 +1,7 @@
 # wildfly-elytron-gsoc
 Repo containing summary of the past three months of Google Summer of Code 2019.
 
-During the three months long summer, I was working with WildFly Elytron Team of Red Hat JBoss Middleware (JBoss Community) under [Google Summer of Code 2019](https://summerofcode.withgoogle.com/projects/#6324732998189056).
+During the three months long summer, I worked with WildFly Elytron Team of Red Hat JBoss Middleware (JBoss Community) under [Google Summer of Code 2019](https://summerofcode.withgoogle.com/projects/#6324732998189056).
 
 ## Project Outline
 WildFly Elytron is a new security framework developed by WildFly to provide a single unified security framework across whole of the application server which replaced the pre existing Java Authentication and Authorization Service (JAAS) which used to be the standard Pluggable Authentication Module (PAM) information security framework. 
