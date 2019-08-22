@@ -24,8 +24,10 @@ import org.wildfly.security.authz.Attributes;
 import org.wildfly.security.authz.MapAttributes;
 import org.wildfly.security.authz.Roles;
 import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,28 +36,144 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author <a href="mailto:guptab3@gmail.com">Bhaskar Gupta</a>
  */
- 
+
 class ScriptRoleDecoderTest {
-    static HashMap<String,String> configuration = new HashMap<>();
-    static{
+
+
+    @Test
+    public void testInitialiseMethodSpecified() throws ScriptException {
+        HashMap<String,String> configuration = new HashMap<>();
+
         configuration.put("pathToJSFile","src//TestJSFile.js");
         configuration.put("jsFunction","myFunction");
         configuration.put("attribute","department");
-    }
-    
-    ScriptRoleDecoder obj = new ScriptRoleDecoder();
-    Set<String> ss = createSet("student","teacher","staff");
-    Attributes att = new MapAttributes(createMap("department",ss));
-    AuthorizationIdentity authId = AuthorizationIdentity.basicIdentity(att);
-    
-    @Test
-    public void testMe() throws ScriptException {
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+
         obj.initialize(configuration);
+
+        Set<String> ss = createSet("student");
+        Attributes att = new MapAttributes(createMap("department",ss));
+        AuthorizationIdentity authId = AuthorizationIdentity.basicIdentity(att);
+
         Roles checkRole = Roles.fromSet(createSet("gate","class","room"));
         Roles roleDefault = obj.decodeRoles(authId);
         assertEquals(checkRole,roleDefault);
+        Iterator<String> iterator = roleDefault.iterator();
+        int count = 0;
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        assertEquals(count, 3);
+
     }
-    
+    @Test
+    public void testInitialiseDefaultMethod() throws  ScriptException{
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("pathToJSFile","src//TestJSFile.js");
+        configuration.put("attribute","department");
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+
+        obj.initialize(configuration);
+
+        Set<String> ss = createSet("student");
+        Attributes att = new MapAttributes(createMap("department",ss));
+        AuthorizationIdentity authId = AuthorizationIdentity.basicIdentity(att);
+
+        Roles checkRole = Roles.fromSet(createSet("gate","class","room"));
+        Roles roleDefault = obj.decodeRoles(authId);
+        assertEquals(checkRole,roleDefault);
+        Iterator<String> iterator = roleDefault.iterator();
+        int count = 0;
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        assertEquals(count, 3);
+    }
+    @Test
+    public void testMissingPath() throws ScriptException {
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("jsFunction","myFunction");
+        configuration.put("attribute","department");
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> obj.initialize(configuration));
+        assertEquals("pathToJSFile cannot be null",exception.getMessage());
+    }
+    @Test
+    public void testWrongFilePath(){
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("pathToJSFile","src//TestJSFile.js");
+        configuration.put("jsFunction","myFunction");
+        configuration.put("attribute","department");
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+        Throwable exception = assertThrows(FileNotFoundException.class, () -> obj.initialize(configuration));
+        assertEquals("file not found",exception.getMessage());
+    }
+    @Test
+    public void testJSFunctionNotExisting() throws ScriptException {
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("pathToJSFile","src//TestJSFile.js");
+        configuration.put("jsFunction","myFunction");
+        configuration.put("attribute","department");
+
+        Set<String> ss = createSet("student");
+        Attributes att = new MapAttributes(createMap("department",ss));
+        AuthorizationIdentity authId = AuthorizationIdentity.basicIdentity(att);
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+        obj.initialize(configuration);
+        Throwable exception = assertThrows(NoSuchMethodException.class, () -> obj.decodeRoles(authId));
+        assertEquals("no such method exists",exception.getMessage());
+    }
+    @Test
+    public void testNullAttribute(){
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("pathToJSFile","src//TestJSFile.js");
+        configuration.put("jsFunction","myFunction");
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> obj.initialize(configuration));
+        assertEquals("attribute cannot be null",exception.getMessage());
+    }
+    @Test
+    public void testAttributeAbsentInAuthID() throws ScriptException {
+        HashMap<String,String> configuration = new HashMap<>();
+
+        configuration.put("pathToJSFile","src//TestJSFile.js");
+        configuration.put("jsFunction","myFunction");
+        configuration.put("attribute","department");
+
+        Set<String> ss = createSet("student");
+        Attributes att = new MapAttributes(createMap("department",ss));
+        AuthorizationIdentity authId = AuthorizationIdentity.basicIdentity(att);
+
+        ScriptRoleDecoder obj = new ScriptRoleDecoder();
+        obj.initialize(configuration);
+
+        Roles checkRole = Roles.fromSet(createSet("gate","class","room"));
+        Roles roleDefault = obj.decodeRoles(authId);
+
+        assertNotEquals(checkRole,roleDefault);
+
+        Iterator<String> iterator = roleDefault.iterator();
+        int count = 0;
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        assertEquals(count, 0);
+
+    }
     private Set<String> createSet(String... values) {
         HashSet<String> set = new HashSet<>();
         for (String s : values) set.add(s);
